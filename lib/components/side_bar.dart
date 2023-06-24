@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import '../screens/home_screen.dart';
-import '../screens/weather_screen.dart';
+// import '../screens/weather_screen.dart';
 import '../screens/map_screen.dart';
-import '../screens/bluetooth_screen.dart';
+// import '../screens/bluetooth_screen.dart';
 import '../screens/instruction_screen.dart';
 
 class SideBar extends StatelessWidget {
@@ -27,46 +28,45 @@ class SideBar extends StatelessWidget {
             thickness: 3,
             height: 5,
           ),
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Home'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            ),
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.home),
+          //   title: const Text('Home'),
+          //   onTap: () => Navigator.push(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => const HomeScreen()),
+          //   ),
+          // ),
           ListTile(
             leading: const Icon(Icons.sunny_snowing),
             title: const Text('Weather'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const WeatherScreen()),
+            onTap: () => Get.to(
+              HomeScreen(),
+              transition: Transition.noTransition,
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.map_outlined),
-            title: const Text('Maps'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MapScreen()),
+            leading: const Icon(Icons.directions_bike),
+            title: const Text('Ride Now'),
+            onTap: () => Get.to(
+              MapScreen(),
+              transition: Transition.noTransition,
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.bluetooth_searching),
-            title: const Text('Bluetooth Devices'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const BluetoothScreen()),
-            ),
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.bluetooth_searching),
+          //   title: const Text('Bluetooth Devices'),
+          //   onTap: () => Navigator.push(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => const BluetoothScreen()),
+          //   ),
+          // ),
           const Spacer(),
           ListTile(
             leading: const Icon(Icons.integration_instructions_outlined),
             title: const Text('How to use BOATS'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const InstructionScreen()),
+            onTap: () => Get.to(
+              InstructionScreen(),
+              transition: Transition.noTransition,
             ),
           ),
           ListTile(
