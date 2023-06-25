@@ -1,16 +1,35 @@
 import 'package:boats_mobile_app/components/custom_bottom_navigation.dart';
+import 'package:boats_mobile_app/controllers/global_controller.dart';
+import 'package:boats_mobile_app/models/current_weather_data.dart';
+import 'package:boats_mobile_app/models/daily_weather_data.dart';
 import 'package:boats_mobile_app/utils/background_gradient.dart';
+import 'package:boats_mobile_app/utils/get_day.dart';
 import 'package:boats_mobile_app/utils/string_casing_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'weather_screen.dart';
-// import 'map_screen.dart';
-// import 'bluetooth_screen.dart';
+import 'package:intl/intl.dart';
 import '../components/app_bar.dart';
 import '../components/side_bar.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  // call the controller
+  final GlobalController globalController = Get.put(
+    GlobalController(),
+    permanent: true,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +42,18 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: _weatherDashboardWidget(),
+                child: Obx(() => globalController.checkLoading().isTrue
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : _weatherDashboardWidget(
+                        globalController.getCurrentLocation().value,
+                        globalController
+                            .getWeatherData()
+                            .getCurrentWeatherData(),
+                        globalController
+                            .getWeatherData()
+                            .getDailyWeatherData())),
               ),
               const CustomBottomNavigation(
                 pageIndex: 0,
@@ -35,16 +65,21 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // to remove when the app will have a proper menu,
-  // for now this is the default menu
-  Widget _weatherDashboardWidget() {
+  // to remove when the app will have a proper menu
+  // for now the home is the weather dashboard
+  Widget _weatherDashboardWidget(
+      String location,
+      CurrentWeatherData currentWeatherData,
+      DailyWeatherData dailyWeatherData) {
+    String currentDay = DateFormat('EEEE').format(DateTime.now());
+
     return SingleChildScrollView(
       child: Column(
         children: [
           const SizedBox(height: 20),
           Center(
             child: Text(
-              'Metro Manila, Pasig City, Philippines',
+              location,
               style: GoogleFonts.lobster(fontSize: 18, color: Colors.white),
             ),
           ),
@@ -73,7 +108,7 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           const SizedBox(height: 10),
                           Text(
-                            'Monday',
+                            currentDay,
                             style: GoogleFonts.lobster(
                               fontSize: 30,
                               color: Colors.white,
@@ -81,7 +116,7 @@ class HomeScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 20),
                           Image.asset(
-                            'assets/weather/01d.png',
+                            'assets/weather/${currentWeatherData.current.weather![0].icon}.png',
                             height: 80,
                           ),
                         ],
@@ -96,7 +131,7 @@ class HomeScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
-                                  '28 °C',
+                                  '${currentWeatherData.current.temp}°C',
                                   style: GoogleFonts.lobster(
                                     fontSize: 50,
                                     color: Colors.white,
@@ -114,7 +149,7 @@ class HomeScreen extends StatelessWidget {
                                       fontSize: 16, color: Colors.white),
                                 ),
                                 Text(
-                                  '13 KPH',
+                                  '${currentWeatherData.current.windSpeed} KPH',
                                   style: GoogleFonts.roboto(
                                       fontSize: 16, color: Colors.white),
                                 ),
@@ -129,7 +164,7 @@ class HomeScreen extends StatelessWidget {
                                       fontSize: 16, color: Colors.white),
                                 ),
                                 Text(
-                                  '100 %',
+                                  '${currentWeatherData.current.humidity} %',
                                   style: GoogleFonts.roboto(
                                       fontSize: 16, color: Colors.white),
                                 ),
@@ -144,7 +179,7 @@ class HomeScreen extends StatelessWidget {
                                       fontSize: 16, color: Colors.white),
                                 ),
                                 Text(
-                                  '50 %',
+                                  '${currentWeatherData.current.clouds} %',
                                   style: GoogleFonts.roboto(
                                       fontSize: 16, color: Colors.white),
                                 ),
@@ -160,7 +195,8 @@ class HomeScreen extends StatelessWidget {
                   margin: EdgeInsets.only(top: 10),
                   height: 50,
                   child: Text(
-                    'heavy shower rain and drizzle'.toTitleCase(),
+                    currentWeatherData.current.weather![0].description!
+                        .toTitleCase(),
                     textAlign: TextAlign.center,
                     style: GoogleFonts.openSans(
                       fontSize: 16,
@@ -173,11 +209,18 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           Container(
-            margin: const EdgeInsets.only(left: 40, right: 40, top: 15),
-            child: Column(
-              children: List.generate(
-                7,
-                (index) => Container(
+            height: 1,
+            width: MediaQuery.of(context).size.width - 50,
+            color: Colors.white,
+            margin: const EdgeInsets.only(top: 20, bottom: 10),
+          ),
+          Container(
+            height: 328,
+            padding: const EdgeInsets.only(left: 40, right: 40),
+            child: ListView.builder(
+              itemCount: 7,
+              itemBuilder: (context, index) {
+                return Container(
                   margin: const EdgeInsets.symmetric(vertical: 10),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -190,17 +233,17 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       SizedBox(
                         child: Text(
-                          'Sat',
+                          getDay(dailyWeatherData.daily[index].dt, 'EEE'),
                           style: GoogleFonts.lobster(fontSize: 16),
                         ),
                       ),
                       Image.asset(
-                        'assets/weather/01d.png',
+                        'assets/weather/${dailyWeatherData.daily[index].weather![0].icon}.png',
                         height: 30,
                         width: 30,
                       ),
                       Text(
-                        '28 °C',
+                        '${dailyWeatherData.daily[index].temp!.min} / ${dailyWeatherData.daily[index].temp!.max}°C',
                         style: GoogleFonts.roboto(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -208,8 +251,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-              ),
+                );
+              },
             ),
           )
         ],
