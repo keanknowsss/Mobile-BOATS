@@ -1,4 +1,3 @@
-import 'package:boats_mobile_app/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'screens/home_screen.dart';
@@ -12,13 +11,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return const GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.primary,
-        ),
-      ),
       home: HomeScreen(),
     );
   }
