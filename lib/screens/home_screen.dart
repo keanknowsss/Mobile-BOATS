@@ -25,10 +25,16 @@ class _HomeScreenState extends State<HomeScreen> {
     GlobalController(),
     permanent: true,
   );
+  late String currentLocation;
 
   @override
   void initState() {
     super.initState();
+    globalController.getLocation().then((_) {
+      setState(() {
+        currentLocation = globalController.getCurrentLocation().value;
+      });
+    });
   }
 
   @override

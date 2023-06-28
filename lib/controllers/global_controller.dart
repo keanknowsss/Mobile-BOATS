@@ -63,8 +63,17 @@ class GlobalController extends GetxController {
         _longitude.value = value.longitude;
 
         getAddress(_latitude.value, _longitude.value).then((placemark) {
-          _currentLocation.value =
-              '${placemark.thoroughfare}, ${placemark.locality}, ${placemark.administrativeArea}';
+          if (placemark.subThoroughfare?.isEmpty &&
+              placemark.thoroughfare?.isEmpty) {
+            _currentLocation.value =
+                '${placemark.locality}, ${placemark.administrativeArea}';
+          } else if (placemark.thoroughfare?.isEmpty) {
+            _currentLocation.value =
+                '${placemark.locality}, ${placemark.administrativeArea}';
+          } else {
+            _currentLocation.value =
+                '${placemark.subThoroughfare} ${placemark.thoroughfare}, ${placemark.locality}, ${placemark.administrativeArea}';
+          }
         });
 
         return GetWeatherApi()
